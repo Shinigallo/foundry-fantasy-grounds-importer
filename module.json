@@ -1,0 +1,27 @@
+{
+  "id": "foundry-fantasy-grounds-importer",
+  "title": "FG 5e XML Importer",
+  "description": "Importa schede personaggio D&D 5e esportate in XML da Fantasy Grounds (formato <characters version=\"5\">) nel sistema dnd5e di Foundry VTT",
+  "version": "1.0.0",
+  "compatibility": {
+    "minimum": "13",
+    "verified": "13",
+    "systems": {
+      "dnd5e": {
+        "minimum": "4.0.0",
+        "verified": "4.4.0"
+      }
+    }
+  },
+  "authors": [
+    {
+      "name": "Shinigallo"
+    }
+  ],
+  "esmodules": [
+    "main.js"
+  ],
+  "styles": [
+    "styles/module.css"
+  ]
+}
