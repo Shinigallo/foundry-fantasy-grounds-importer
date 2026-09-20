@@ -1,0 +1,16 @@
+/* FG 5e XML Importer - styling minimi per i bottoni */
+
+.directory-footer .import-fg-xml {
+  width: 100%;
+  margin-top: 0.3em;
+  font-size: 0.85em;
+}
+
+button.import-fg-xml,
+.sheet-header button.import-fg-xml {
+  color: inherit;
+}
+
+button.import-fg-xml:hover {
+  color: var(--color-gold, #b8860b);
+}
