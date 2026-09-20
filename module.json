@@ -2,7 +2,7 @@
   "id": "foundry-fantasy-grounds-importer",
   "title": "Fantasy Grounds Importer",
   "description": "Importa schede D&D 5e esportate in XML da Fantasy Grounds creando o aggiornando attori nel sistema dnd5e",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "compatibility": {
     "minimum": "11",
     "verified": "12",
