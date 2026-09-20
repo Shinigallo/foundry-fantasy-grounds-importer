@@ -1,90 +1,64 @@
-# FG 5e XML Importer
+# Foundry VTT - Fantasy Grounds Importer
 
-Modulo per **Foundry VTT v13** (sistema ufficiale **dnd5e** 4.x) che importa schede personaggio D&D 5e esportate in XML da **Fantasy Grounds** (funzione "Export a Character", formato `<characters version="5">`).
+Un modulo per **Foundry VTT** (sistema **dnd5e**) che importa le schede personaggio D&D 5e esportate in **XML** da **Fantasy Grounds** ("Export a Character"), creando o aggiornando attori.
 
-Stesso stile e convenzioni di [`foundry-5e-companion-importer`](https://github.com/Shinigallo/foundry-5e-companion-importer).
+## Compatibilità
+
+- Foundry VTT **v12** (testato su 12.343, minimo dichiarato 11)
+- Sistema dnd5e **3.3.1** (minimo 3.0.0)
 
 ## Caratteristiche
 
-- **Pulsante nella sidebar** (sotto la lista Attori) per l'import globale: ogni `<pc>` presente nel file XML crea un actor separato.
-- **Pulsante nell'header della scheda actor** per aggiornare l'actor aperto con i dati di un file XML.
-- **Hotkey F9** per aprire la finestra di import (funziona quando non si sta digitando in un campo).
-- Importazione di:
-  - nome, livello, taglia, iniziativa, CA, PF (attuale e massimi), velocità
-  - caratteristiche e proficienze di **saving throw** (in dnd5e 4.4.x la proficienza di saving vive sul campo `proficient` dell'abilità)
-  - proficienze di skill
-  - razza (con sottorazza) e classi con livello e dado di PF
-  - azioni/attacchi → item `weapon` con bonus d'attacco fisso e danno (tipo danno letto dal testo)
-  - ritratto base64, salvato in `Data/fg-imports/`
-- Gli item generati dal modulo sono marcati con il flag `foundry-fantasy-grounds-importer.managedByFgImporter`: al ri-import su uno stesso actor vengono eliminati e ricreati solo quelli, senza toccare il resto della scheda.
-- I tag XML non riconosciuti vengono ignorati (e i valori mancanti lasciano i campi di default di dnd5e).
+### 📥 Import da Fantasy Grounds
+Importa personaggi direttamente dai file XML esportati da Fantasy Grounds (formato `<characters version="5">`).
+- **Attributi:** abilità, saving throw, skill (con abilità associata).
+- **Combattimento:** AC, HP, movimento, iniziativa.
+- **Identità:** razza (+ sottorazza), classi (con livelli e dadi di colpo), livello totale derivato, taglia.
+- **Armi:** ogni azione del personaggio (`|+6|1d6+3`) diventa un'arma con bonus d'attacco fisso e formula di danno; il tipo (simple/martial/natural) viene dedotto dal nome.
+- **Ritratto:** se presente nell'export, viene salvato nel data folder.
+- Ogni `<pc>` nel file crea un attore separato.
+
+### 🔁 Ri-import / aggiornamento
+Gli item creati dal modulo (razza, classi, armi) vengono marcati con il flag `managedByFgImporter`. Ri-importando sullo stesso attore vengono rimossi e rigenerati, senza toccare gli item creati a mano.
 
 ## Installazione
 
-1. Copia la cartella `foundry-fantasy-grounds-importer/` in `{data}/Data/modules/` di Foundry VTT.
-2. Riavvia Foundry VTT (o ricarica la world).
-3. In **Module Management** abilita *FG 5e XML Importer*.
+### Tramite URL (consigliato)
+1. Apri **File → Manage & Configure Add-ons → Modules**.
+2. Clicca **Install Module** (in alto a destra).
+3. Incolla il **Manifest URL**:
 
-> Il modulo richiede il sistema **dnd5e** (verificato con 4.4.x) e i permessi di **GM**.
+   ```
+   https://github.com/Shinigallo/foundry-fantasy-grounds-importer/releases/latest/download/module.json
+   ```
 
-## Uso
+4. Clicca **Install**.
 
-- **Import globale:** nella sidebar, sotto la lista Attori, clicca *Import FG XML* (oppure premi **F9**), seleziona il file `.xml` e conferma.
-- **Aggiornamento di un actor esistente:** apri la scheda del personaggio e clicca il pulsante con l'icona "import" nell'header della scheda, poi seleziona il file `.xml` corrispondente.
+### Manuale
+1. Scarica il `module.zip` dall'ultimo [release](https://github.com/Shinigallo/foundry-fantasy-grounds-importer/releases).
+2. Decomprimalo nella cartella `Data/modules/` di Foundry (dentro deve esserci `module.json`).
+3. Attiva il modulo in **Manage & Configure Add-ons → Modules**.
 
-## Formato XML atteso
+## Utilizzo
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<characters version="5">
-  <pc>
-    <label>Kip “Zanna verde” Underbough</label>
-    <name>Halfling, Ghostwise Druid 4/Monk 3</name>
-    <level>7</level>
-    <size>S</size>
-    <init>3</init>
-    <ac>16</ac>
-    <hp>59/59 (4d8+3d8)</hp>
-    <speed>35 ft.</speed>
-    <str>8</str><dex>16</dex><con>16</con><int>10</int><wis>16</wis><cha>8</cha>
-    <save>Intelligence +3</save>
-    <save>Wisdom +6</save>
-    <skill>Insight +6</skill>
-    <action>
-      <name>Quarterstaff</name>
-      <text>Melee Weapon Attack: +6 to hit, reach 5 ft., one target. Hit: 1d6 + 3 bludgeoning damage.</text>
-      <attack>|+6|1d6+3</attack>
-    </action>
-    <portrait>/9j/4AAQ...</portrait>
-  </pc>
-</characters>
-```
+- **Pulsante sidebar:** "Import FG XML" nella lista degli attori.
+- **Pulsante scheda:** nell'header della scheda attore (tipo character): aggiorna quell'attore.
+- **Hotkey:** `F9`.
+- Disponibile solo per il **GM**.
 
-### Mapping dei campi
+Seleziona il file XML esportato da Fantasy Grounds e conferma con **Importa**.
 
-| XML | dnd5e 4.4.x |
-|---|---|
-| `label` | `actor.name` |
-| `name` | item `race` (con `subtype`) + item `class` (uno per `Nome N`) |
-| `level` | `system.details.level` |
-| `size` | `system.traits.size` (S→`sm`, M→`med`, …) |
-| `init` | `system.attributes.init.bonus` |
-| `ac` | `system.attributes.ac = {calc:"flat", flat}` |
-| `hp` | `system.attributes.hp.{value,max}` |
-| `speed` | `system.attributes.movement.walk` |
-| `str…cha` | `system.abilities.<k>.value` |
-| `save` | `system.abilities.<k>.proficient = 1` |
-| `skill` | `system.skills.<chiave abbreviata>.value = 1` |
-| `action` | item `weapon` con activity `attack` (bonus e danno) |
-| `portrait` | immagine in `Data/fg-imports/` + `actor.img` |
-
-## Struttura del modulo
+## Struttura del file
 
 ```
 foundry-fantasy-grounds-importer/
-├── module.json        # manifest
-├── main.js            # UI: bottoni, hotkey, dialog
-├── import.js          # parsing XML + mapping dnd5e
+├── module.json
+├── README.md
+├── scripts/
+│   ├── main.js      # UI: bottoni, dialog, hotkey
+│   └── import.js    # parsing XML e mapping nel modello dnd5e 3.x
 └── styles/
-    └── module.css     # styling dei bottoni
+    └── module.css
 ```
+
+Nessun step di build: è sufficiente la cartella del modulo.
